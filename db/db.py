@@ -62,6 +62,12 @@ try:
 except ImportError:
     HAS_PYMSSQL = False
 
+try:
+    from google.cloud import bigquery
+    HAS_BIGQUERY = True
+except ImportError:
+    HAS_BIGQUERY = False
+
 
 DBPY_PROFILE_ID = ".db.py_"
 S3_PROFILE_ID = ".db.py_s3_"
