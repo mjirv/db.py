@@ -775,7 +775,7 @@ class DB(object):
         SQLite doesn't come with any metatables (at least ones that fit into our
         framework), so we're going to create them.
         """
-        sys.stderr.write("Indexing schema. This will take a second...")
+        
         rows_to_insert = []
         tables = [row[0] for row in self.cur.execute("select name from sqlite_master where type='table';")]
         for table in tables:
@@ -804,7 +804,7 @@ class DB(object):
             self.cur.execute(sql_insert.format(*row))
 
         self.con.commit()
-        sys.stderr.write("finished!\n")
+        
 
     def refresh_schema(self, exclude_system_tables=True, use_cache=False):
         """
@@ -851,7 +851,7 @@ class DB(object):
             self._tables = TableSet([Table(self.con, self._query_templates, tables[t][0].schema, t, tables[t],
                                            keys_per_column=self.keys_per_column) for t in sorted(tables.keys())])
 
-        sys.stderr.write("done!\n")
+        
 
     def _get_db_metadata(self, exclude_system_tables, use_cache):
 
@@ -860,7 +860,7 @@ class DB(object):
 
         # pull out column metadata for all tables as list of tuples if told to use cached metadata
         if use_cache and self._metadata_cache:
-            sys.stderr.write("Loading cached metadata. Please wait...")
+            
 
             for table in self._metadata_cache:
 
@@ -871,7 +871,7 @@ class DB(object):
                 for col in table['columns']:
                     col_meta.append((col['schema'], col['table'], col['name'], col['type']))
         else:
-            sys.stderr.write("Refreshing schema. Please wait...")
+            
             if self.schemas is not None and isinstance(self.schemas, list) and 'schema_specified' in \
                     self._query_templates['system']:
                 schemas_str = ','.join([repr(schema) for schema in self.schemas])
@@ -982,7 +982,7 @@ class DB(object):
         # much faster when it comes time to run the \COPY statment.
         #
         # see http://docs.aws.amazon.com/redshift/latest/dg/t_splitting-data-files.html
-        sys.stderr.write("Transfering {0} to s3 in chunks".format(name))
+        
         len_df = len(df)
         chunks = range(0, len_df, chunk_size)
 
@@ -996,7 +996,7 @@ class DB(object):
             with gzip.GzipFile(fileobj=out, mode="w") as f:
                   f.write(chunk.to_csv(index=False, encoding='utf-8'))
             k.set_contents_from_string(out.getvalue())
-            sys.stderr.write(".")
+            
             return i
 
         threads = []
@@ -1008,12 +1008,12 @@ class DB(object):
         # join all threads
         for t in threads:
             t.join()
-        sys.stderr.write("done\n")
+        
 
         if drop_if_exists:
             sql = "DROP TABLE IF EXISTS {0};".format(name)
             if print_sql:
-                sys.stderr.write(sql + "\n")
+                
             self._try_command(sql)
 
         # generate schema from pandas and then adapt for redshift
@@ -1023,13 +1023,13 @@ class DB(object):
         # we'll create the table ONLY if it doens't exist
         sql = sql.replace("CREATE TABLE", "CREATE TABLE IF NOT EXISTS")
         if print_sql:
-            sys.stderr.write(sql + "\n")
+            
         self._try_command(sql)
         self.con.commit()
 
         # perform the \COPY here. the s3 argument is a prefix, so it'll pick up
         # all of the data*.gz files we've created
-        sys.stderr.write("Copying data from s3 to redshfit...")
+        
         sql = """
         copy {name} from 's3://{bucket_name}/data'
         credentials 'aws_access_key_id={AWS_ACCESS_KEY};aws_secret_access_key={AWS_SECRET_KEY}'
@@ -1037,17 +1037,17 @@ class DB(object):
         """.format(name=name, bucket_name=bucket_name,
                    AWS_ACCESS_KEY=AWS_ACCESS_KEY, AWS_SECRET_KEY=AWS_SECRET_KEY)
         if print_sql:
-            sys.stderr.write(sql + "\n")
+            
         self._try_command(sql)
         self.con.commit()
-        sys.stderr.write("done!\n")
+        
         # tear down the bucket
-        sys.stderr.write("Tearing down bucket...")
+        
         for key in bucket.list():
             key.delete()
         if not s3_bucket:
             conn.delete_bucket(bucket_name)
-        sys.stderr.write("done!")
+        
 
     def to_dict(self):
         """Dict representation of the database as credentials plus tables dict representation."""
