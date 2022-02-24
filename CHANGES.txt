@@ -1,3 +1,7 @@
+0.5.4
+=====
+- removes noisy stderr writes
+- some initial bigquery scaffolding (commented out)
 0.3
 =====
 - support for Oracle & MS SQL
