@@ -9,11 +9,11 @@ required = [
 ]
 
 setup(
-    name="db.py",
+    name="rafa-db",
     version="0.5.4",
-    author="Greg Lamp",
-    author_email="greg@yhathq.com",
-    url="https://github.com/yhat/db.py",
+    author="Michael Irvine",
+    author_email="michael.j.irvine@gmail.com",
+    url="https://github.com/mjirv/db.py",
     license="BSD",
     packages=find_packages(),
     package_dir={"db": "db"},
