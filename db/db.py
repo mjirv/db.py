@@ -1018,7 +1018,7 @@ class DB(object):
 
         if drop_if_exists:
             sql = "DROP TABLE IF EXISTS {0};".format(name)
-            if print_sql:
+            
                 
             self._try_command(sql)
 
@@ -1028,7 +1028,7 @@ class DB(object):
         sql = sql.replace("[", "").replace("]", "")
         # we'll create the table ONLY if it doens't exist
         sql = sql.replace("CREATE TABLE", "CREATE TABLE IF NOT EXISTS")
-        if print_sql:
+        
             
         self._try_command(sql)
         self.con.commit()
@@ -1042,8 +1042,8 @@ class DB(object):
         CSV IGNOREHEADER as 1 GZIP;
         """.format(name=name, bucket_name=bucket_name,
                    AWS_ACCESS_KEY=AWS_ACCESS_KEY, AWS_SECRET_KEY=AWS_SECRET_KEY)
-        if print_sql:
-            
+        
+           
         self._try_command(sql)
         self.con.commit()
         
