@@ -1,6 +1,4 @@
-from distutils.core import setup
-from setuptools import find_packages
-
+from setuptools import setup, find_packages
 
 required = [
     "prettytable==0.7.2",

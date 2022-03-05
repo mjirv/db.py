@@ -159,7 +159,7 @@ class DB(object):
                 raise Exception("Database type not specified! Must select one of: postgres, sqlite, mysql, mssql, or redshift")
 
         self._use_cache = cache
-        if dbtype not in ("sqlite", "mssql") and username is None:
+        if dbtype not in ("sqlite", "mssql", "bigquery") and username is None:
             self.load_credentials(profile)
             if cache:
                 self._metadata_cache = self.load_metadata(profile)
@@ -259,6 +259,17 @@ class DB(object):
                                            password=self.password,
                                            database=self.dbname)
                 self.cur = self.con.cursor()
+
+        elif self.dbtype == 'bigquery':
+            if not HAS_BIGQUERY:
+                raise Exception("Couldn't find bigquery library. Please ensure it is installed")
+            client = bigquery.Client()
+            self.con = bigquery.dbapi.Connection(client)
+            self.con.autocommit(True)
+            self.cur = self.con.cursor()
+
+        elif self.dbtype == 'snowflake':
+            pass
 
         self._tables = TableSet([])
         self._exclude_system_tables = exclude_system_tables
