@@ -9,7 +9,7 @@ class Table(object):
     about the columns, schema, etc. of a table and you can also use it to execute queries.
     """
 
-    def __init__(self, con, query_templates, schema, name, cols, keys_per_column, foreign_keys=None, ref_keys=None):
+    def __init__(self, con, query_templates, schema, name, cols, keys_per_column, foreign_keys=[], ref_keys=[]):
         self.schema = schema
         self.name = name
         self._con = con
@@ -28,7 +28,7 @@ class Table(object):
 
         # ToDo: factor out common logic below
         # load foreign keys if not provided
-        if not isinstance(foreign_keys, list):
+        if len(foreign_keys) == 0 and 'foreign_keys_for_table' in self._query_templates['system']:
             self._cur.execute(self._query_templates['system']['foreign_keys_for_table'].format(table=self.name,
                                                                                                table_schema=self.schema))
             foreign_keys = self._cur
@@ -45,7 +45,7 @@ class Table(object):
         self.foreign_keys = ColumnSet(self.foreign_keys)
 
         # load ref keys if not provided
-        if not isinstance(ref_keys, list):
+        if len(ref_keys) == 0 and 'ref_keys_for_table' in self._query_templates['system']:
             self._cur.execute(self._query_templates['system']['ref_keys_for_table'].format(table=self.name,
                                                                                            table_schema=self.schema))
             ref_keys = self._cur

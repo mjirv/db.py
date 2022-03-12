@@ -15,21 +15,23 @@ queries = {
     "system": {
         "schema_no_system": """
             select
-                table_name
+                table_schema
+                , table_name
                 , column_name
                 , data_type
             from
-                information_schema.columns
+                INFORMATION_SCHEMA.COLUMNS
             where
                 table_schema not in ('information_schema');
             """,
         "schema_with_system": """
             select
-                table_name
+                table_schema
+                , table_name
                 , column_name
                 , data_type
             from
-                information_schema.columns;
+                INFORMATION_SCHEMA.COLUMNS;
             """,
         "schema_specified": """
             select
@@ -38,7 +40,7 @@ queries = {
                 , column_name
                 , data_type
             from
-                information_schema.columns
+                INFORMATION_SCHEMA.COLUMNS
             where table_schema in (%s);
             """
     }

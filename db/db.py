@@ -64,6 +64,8 @@ except ImportError:
 
 try:
     from google.cloud import bigquery
+    from google.cloud.bigquery import dbapi
+    from google.cloud.bigquery.job import QueryJobConfig
     HAS_BIGQUERY = True
 except ImportError:
     HAS_BIGQUERY = False
@@ -138,7 +140,8 @@ class DB(object):
         pass
     """
     def __init__(self, username=None, password=None, hostname="localhost",
-            port=None, filename=None, dbname=None, dbtype=None, schemas=None,
+            port=None, filename=None, dbname=None, dbtype=None, schemas=None, 
+            bq_project=None, bq_default_dataset=None,
             profile="default", exclude_system_tables=True, limit=1000,
             keys_per_column=None, driver=None, cache=False):
 
@@ -261,11 +264,16 @@ class DB(object):
                 self.cur = self.con.cursor()
 
         elif self.dbtype == 'bigquery':
+            self.bq_project = bq_project
+            self.bq_default_dataset = bq_default_dataset
+
             if not HAS_BIGQUERY:
                 raise Exception("Couldn't find bigquery library. Please ensure it is installed")
-            client = bigquery.Client()
-            self.con = bigquery.dbapi.Connection(client)
-            self.con.autocommit(True)
+            if not self.bq_default_dataset:
+                raise Exception("No BigQuery default dataset specified")
+            config = QueryJobConfig(default_dataset=self.bq_default_dataset)
+            client = bigquery.Client(project=self.bq_project, default_query_job_config=config)
+            self.con = dbapi.Connection(client)
             self.cur = self.con.cursor()
 
         elif self.dbtype == 'snowflake':
