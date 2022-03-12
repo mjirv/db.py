@@ -1,3 +1,7 @@
+0.6.0
+=====
+- support for BigQuery
+
 0.5.4
 =====
 - removes noisy stderr writes

@@ -8,7 +8,7 @@ required = [
 
 setup(
     name="rafa-db",
-    version="0.5.4",
+    version="0.6.0",
     author="Michael Irvine",
     author_email="michael.j.irvine@gmail.com",
     url="https://github.com/mjirv/db.py",
